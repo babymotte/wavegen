@@ -22,6 +22,10 @@ public class ToneGenerator implements AutoCloseable {
 	private volatile WaveGenerator waveGenerator;
 	private volatile Mixer.Info mixerInfo;
 	private volatile boolean fadeIn;
+	
+	public ToneGenerator() {
+		this(-1);
+	}
 
 	public ToneGenerator(int bufferSize) {
 		this.bufferSize = bufferSize;
@@ -29,22 +33,13 @@ public class ToneGenerator implements AutoCloseable {
 	}
 
 	public boolean stop() {
-		
-		SourceDataLine line = playingLine.getAndSet(null);
-		if(line != null) {
-			line.drain();
-			line.stop();
-			line.close();
-			return true;
-		}
-		
-		return false;
+		SourceDataLine line = this.playingLine.getAndSet(null);
+		this.thread.execute(() -> doStop(line));
+		return line != null;
 	}
 
 	public void play(Consumer<Long> onPlaybackStart) throws LineUnavailableException {
 
-		stop();
-		
 		SourceDataLine line = getLine();
 
 		this.thread.execute(() -> doPlay(line, onPlaybackStart));
@@ -84,6 +79,7 @@ public class ToneGenerator implements AutoCloseable {
 
 	private void doPlay(SourceDataLine line, Consumer<Long> onPlaybackStart) {
 		
+		this.playingLine.set(line);
 		line.start();
 
 		int bufferSizeBytes = line.getBufferSize();
@@ -116,7 +112,16 @@ public class ToneGenerator implements AutoCloseable {
 			}
 			line.write(buffer, 0, buffer.length);
 		}
-
+		
+	}
+	
+	private void doStop(SourceDataLine line) {
+		
+		if(line != null) {
+			line.drain();
+			line.stop();
+			line.close();
+		}
 	}
 
 	public WaveGenerator getWaveGenerator() {
@@ -128,7 +133,9 @@ public class ToneGenerator implements AutoCloseable {
 		boolean fade = this.fadeIn;
 		boolean running = false;
 		if(fade) {
-			running = this.stop();
+			SourceDataLine line = this.playingLine.getAndSet(null);
+			doStop(line);
+			running = line != null;
 		}
 		this.waveGenerator = waveGenerator;
 		if(fade && running) {
