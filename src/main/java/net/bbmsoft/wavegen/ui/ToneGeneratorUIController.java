@@ -23,6 +23,7 @@ import net.bbmsoft.wavegen.generators.SineWaveGenerator;
 import net.bbmsoft.wavegen.generators.SquareWaveGenerator;
 import net.bbmsoft.wavegen.generators.TriangleWaveGenerator;
 import net.bbmsoft.wavegen.generators.WhiteNoiseGenerator;
+import net.bbmsoft.wavegen.plugins.GraphRendererPlugin;
 
 public class ToneGeneratorUIController {
 
@@ -58,7 +59,7 @@ public class ToneGeneratorUIController {
 	public ToneGeneratorUIController() {
 
 		this.toneGenerator = new ToneGenerator(4096);
-		this.format = new AudioFormat(48_000, 16, 1, true, true);
+		this.format = new AudioFormat(48_000, 16, 2, true, true);
 		this.toneGenerator.setFadeIn(true);
 
 	}
@@ -87,6 +88,8 @@ public class ToneGeneratorUIController {
 		Region canvasParent = (Region) this.canvas.getParent();
 		canvasParent.widthProperty().addListener((o, ov, nv) -> this.canvas.setWidth(nv.doubleValue()));
 		canvasParent.heightProperty().addListener((o, ov, nv) -> this.canvas.setHeight(nv.doubleValue()));
+		
+		this.toneGenerator.addPlugin(new GraphRendererPlugin(this.canvas));
 	}
 
 	private void initGainSlider() {

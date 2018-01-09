@@ -11,7 +11,6 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 
 	private final AudioFormat format;
 
-	private double samplesPerPeriod;
 	private double freqency;
 
 	private volatile double gain;
@@ -37,20 +36,24 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 			this.pos = 0.0;
 		}
 
-		double samplesPer2Pi = getSamplesPerPeriod();
+		double framesPer2Pi = format.getSampleRate() / this.freqency;
+		int frameSize = format.getFrameSize();
 
-		for (int i = 0; i < buffer.length;) {
+		for (int i = 0; i < buffer.length / frameSize; i++) {
+			
 			double pos = this.pos;
-			this.pos = ++this.pos % samplesPer2Pi;
+			this.pos = ++this.pos % framesPer2Pi;
 
-			double relativePosition = (pos / samplesPer2Pi);
+			double relativePosition = (pos / framesPer2Pi);
 			
 			double amp = toRelativeAmplitude(relativePosition) * this.gain;
 			double[] amps = new double[format.getChannels()];
 			Arrays.fill(amps, amp);
 			byte[] formatted = ConversionHelper.toBytes(amps, format);
-			for (int j = 0; j < formatted.length && i < buffer.length; j++) {
-				buffer[i++] = formatted[j];
+			
+			int offset = i * frameSize;
+			for (int j = 0; j < frameSize; j++) {
+				buffer[offset + j] = formatted[j];
 			}
 		}
 	}
@@ -64,11 +67,7 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 
 	@Override
 	public void setFrequency(double freqency) {
-
 		this.freqency = freqency;
-
-		float sr = this.format.getSampleRate();
-		this.samplesPerPeriod = sr / freqency;
 	}
 
 	@Override
@@ -76,8 +75,5 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 		return this.format;
 	}
 
-	protected double getSamplesPerPeriod() {
-		return samplesPerPeriod;
-	}
 
 }

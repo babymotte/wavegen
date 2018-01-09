@@ -16,10 +16,10 @@ import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
 public class ToneGenerator implements AutoCloseable {
-	
+
 	public interface Plugin {
-		
-		public void processBuffer(byte[] buffer);
+
+		public void processBuffer(byte[] buffer, AudioFormat format);
 	}
 
 	private final ExecutorService thread = Executors.newSingleThreadExecutor(r -> new Thread(r, "Tone Generator"));
@@ -30,7 +30,7 @@ public class ToneGenerator implements AutoCloseable {
 	private volatile WaveGenerator waveGenerator;
 	private volatile Mixer.Info mixerInfo;
 	private volatile boolean fadeIn;
-	
+
 	public ToneGenerator() {
 		this(-1);
 	}
@@ -40,11 +40,11 @@ public class ToneGenerator implements AutoCloseable {
 		this.playingLine = new AtomicReference<SourceDataLine>();
 		this.plugins = new CopyOnWriteArrayList<>();
 	}
-	
+
 	public void addPlugin(Plugin plugin) {
 		this.plugins.add(plugin);
 	}
-	
+
 	public void removePlugin(Plugin plugin) {
 		this.plugins.remove(plugin);
 	}
@@ -63,10 +63,9 @@ public class ToneGenerator implements AutoCloseable {
 	}
 
 	private SourceDataLine getLine() throws LineUnavailableException {
-		
 
 		WaveGenerator waveGenerator = this.waveGenerator;
-		
+
 		if (waveGenerator == null) {
 			throw new IllegalStateException("No wave generator set!");
 		}
@@ -77,25 +76,25 @@ public class ToneGenerator implements AutoCloseable {
 		DataLine.Info lineInfo = new DataLine.Info(SourceDataLine.class, format);
 
 		Info mixerInfo = this.mixerInfo;
-		
-		if(mixerInfo != null) {
+
+		if (mixerInfo != null) {
 			Mixer mixer = AudioSystem.getMixer(mixerInfo);
 			line = (SourceDataLine) mixer.getLine(lineInfo);
 		} else {
 			line = (SourceDataLine) AudioSystem.getLine(lineInfo);
 		}
 
-		if(this.bufferSize > 0) {
+		if (this.bufferSize > 0) {
 			line.open(format, this.bufferSize);
 		} else {
 			line.open(format);
 		}
-		
+
 		return line;
 	}
 
 	private void doPlay(SourceDataLine line, Consumer<Long> onPlaybackStart) {
-		
+
 		this.playingLine.set(line);
 		line.start();
 
@@ -104,14 +103,14 @@ public class ToneGenerator implements AutoCloseable {
 		byte[] buffer = new byte[bufferSizeBytes];
 
 		this.waveGenerator.getNextBytes(buffer);
-		
-		if(this.fadeIn) {
+
+		if (this.fadeIn) {
 			for (int i = 0; i < buffer.length; i++) {
 				buffer[i] = (byte) (buffer[i] * (double) i / buffer.length);
 			}
 		}
-		
-		process(line, buffer);
+
+		process(line, buffer, this.waveGenerator.getFormat());
 
 		if (onPlaybackStart != null) {
 			onPlaybackStart.accept(System.currentTimeMillis());
@@ -119,27 +118,27 @@ public class ToneGenerator implements AutoCloseable {
 
 		while (this.playingLine.get() == line) {
 			this.waveGenerator.getNextBytes(buffer);
-			process(line, buffer);
+			process(line, buffer, this.waveGenerator.getFormat());
 		}
-		
-		if(this.fadeIn) {
+
+		if (this.fadeIn) {
 			this.waveGenerator.getNextBytes(buffer);
 			for (int i = 0; i < buffer.length; i++) {
 				buffer[i] = (byte) (buffer[i] * (double) (buffer.length - i) / buffer.length);
 			}
 			line.write(buffer, 0, buffer.length);
 		}
-		
+
 	}
 
-	private void process(SourceDataLine line, byte[] buffer) {
-		this.plugins.forEach(p -> p.processBuffer(buffer));
+	private void process(SourceDataLine line, byte[] buffer, AudioFormat format) {
+		this.plugins.forEach(p -> p.processBuffer(buffer, format));
 		line.write(buffer, 0, buffer.length);
 	}
-	
+
 	private void doStop(SourceDataLine line) {
-		
-		if(line != null) {
+
+		if (line != null) {
 			line.drain();
 			line.stop();
 			line.close();
@@ -151,16 +150,16 @@ public class ToneGenerator implements AutoCloseable {
 	}
 
 	public void setWaveGenerator(WaveGenerator waveGenerator) {
-		
+
 		boolean fade = this.fadeIn;
 		boolean running = false;
-		if(fade) {
+		if (fade) {
 			SourceDataLine line = this.playingLine.getAndSet(null);
 			doStop(line);
 			running = line != null;
 		}
 		this.waveGenerator = waveGenerator;
-		if(fade && running) {
+		if (fade && running) {
 			try {
 				this.play(null);
 			} catch (LineUnavailableException e) {
@@ -190,5 +189,5 @@ public class ToneGenerator implements AutoCloseable {
 	public void setFadeIn(boolean fadeIn) {
 		this.fadeIn = fadeIn;
 	}
-	
+
 }

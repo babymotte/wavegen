@@ -1,5 +1,7 @@
 package net.bbmsoft.wavegen.plugins;
 
+import javax.sound.sampled.AudioFormat;
+
 import net.bbmsoft.wavegen.ToneGenerator;
 
 public class GainPlugin implements ToneGenerator.Plugin {
@@ -7,7 +9,7 @@ public class GainPlugin implements ToneGenerator.Plugin {
 	private volatile double gain;
 	
 	@Override
-	public void processBuffer(byte[] buffer) {
+	public void processBuffer(byte[] buffer, AudioFormat format) {
 		
 	}
 
