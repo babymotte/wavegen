@@ -21,7 +21,7 @@
       <RowConstraints vgrow="SOMETIMES" />
       <RowConstraints vgrow="NEVER" />
       <RowConstraints vgrow="ALWAYS" />
-      <RowConstraints vgrow="ALWAYS" />
+      <RowConstraints vgrow="NEVER" />
    </rowConstraints>
    <columnConstraints>
       <ColumnConstraints hgrow="NEVER" />
