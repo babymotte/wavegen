@@ -126,7 +126,7 @@ public class ToneGenerator implements AutoCloseable {
 			for (int i = 0; i < buffer.length; i++) {
 				buffer[i] = (byte) (buffer[i] * (double) (buffer.length - i) / buffer.length);
 			}
-			line.write(buffer, 0, buffer.length);
+			process(line, buffer, this.waveGenerator.getFrequency(), this.waveGenerator.getFormat());
 		}
 
 	}

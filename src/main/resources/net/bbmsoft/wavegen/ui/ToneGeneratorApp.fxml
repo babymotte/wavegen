@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import net.bbmsoft.wavegen.ui.ResizableCanvas?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -10,14 +10,17 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import net.bbmsoft.wavegen.ui.ResizableCanvas?>
 
 <GridPane hgap="12.0" vgap="12.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.bbmsoft.wavegen.ui.ToneGeneratorUIController">
    <rowConstraints>
       <RowConstraints vgrow="NEVER" />
       <RowConstraints vgrow="SOMETIMES" />
       <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="ALWAYS" />
       <RowConstraints vgrow="ALWAYS" />
    </rowConstraints>
    <columnConstraints>
@@ -42,6 +45,7 @@
             </StackPane>
          </content>
       </TitledPane>
+      <CheckBox fx:id="fadeInOutCheckBox" mnemonicParsing="false" selected="true" text="Fade in/out" GridPane.rowIndex="4" />
    </children>
    <padding>
       <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />

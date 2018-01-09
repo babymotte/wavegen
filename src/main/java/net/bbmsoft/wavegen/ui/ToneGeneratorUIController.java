@@ -10,6 +10,7 @@ import javax.sound.sampled.Mixer.Info;
 
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
@@ -32,6 +33,8 @@ public class ToneGeneratorUIController {
 	private final AudioFormat format;
 
 	private WaveGenerator selectedWaveGenerator;
+	
+	private GraphRendererPlugin graphRendererPlugin;
 
 	@FXML
 	private ResourceBundle resources;
@@ -53,17 +56,20 @@ public class ToneGeneratorUIController {
 
 	@FXML
 	private Slider gainSlider;
-	
+
 	@FXML
 	private Canvas canvas;
-	
+
+	@FXML
+	private CheckBox fadeInOutCheckBox;
+
 	public ToneGeneratorUIController() {
 
 		this.toneGenerator = new ToneGenerator(16384);
 		this.format = new AudioFormat(48_000, 16, 2, true, true);
 		this.toneGenerator.setFadeIn(true);
 		this.gainPlugin = new GainPlugin();
-		
+
 		this.toneGenerator.addPlugin(this.gainPlugin);
 
 	}
@@ -77,6 +83,7 @@ public class ToneGeneratorUIController {
 		assert mixerChoiceBox != null : "fx:id=\"mixerChoiceBox\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 		assert gainSlider != null : "fx:id=\"gainSlider\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 		assert canvas != null : "fx:id=\"canvas\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
+		assert fadeInOutCheckBox != null : "fx:id=\"fadeInOutCheckBox\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 
 		initMixerChoiceBox();
 		initWaveFormChoiceBox();
@@ -84,11 +91,17 @@ public class ToneGeneratorUIController {
 		initStartButton();
 		initGainSlider();
 		initCanvas();
+		initFadeInOutCheckBox();
+	}
 
+	private void initFadeInOutCheckBox() {
+		this.fadeInOutCheckBox.selectedProperty().addListener((o, ov, nv) -> this.toneGenerator.setFadeIn(nv));
+		this.toneGenerator.setFadeIn(this.fadeInOutCheckBox.isSelected());
 	}
 
 	private void initCanvas() {
-		this.toneGenerator.addPlugin(new GraphRendererPlugin(this.canvas));
+		this.graphRendererPlugin = new GraphRendererPlugin(this.canvas);
+		this.toneGenerator.addPlugin(graphRendererPlugin);
 	}
 
 	private void initGainSlider() {

@@ -19,11 +19,13 @@ public class SemitoneStringConverter extends StringConverter<Double> {
             return null;
         }
         
-        if(Integer.valueOf(value) == (int) this.value) {
+        double doubleValue = Double.valueOf(value);
+        
+        if(((int) doubleValue) == (int) this.value) {
         	return this.value;
         }
 
-        return Double.valueOf(value);
+        return doubleValue;
     }
 
     /** {@inheritDoc} */
