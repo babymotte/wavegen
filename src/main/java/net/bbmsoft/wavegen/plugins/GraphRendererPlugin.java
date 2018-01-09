@@ -59,8 +59,8 @@ public class GraphRendererPlugin implements ToneGenerator.Plugin {
 
 	private void drawLine(int frame, int channels, int channel, double ampplitude, double pixelsPerFrame) {
 		
-		double height = this.canvas.getHeight()/channels - (this.vgap * (channels - 1));
-		double y = (height + vgap) * channel;
+		double height = (this.canvas.getHeight() - (channels + 1) * this.vgap) /channels;
+		double y = vgap + (height + vgap) * channel;
 		
 		double scaled = 1 - ((ampplitude + 1) / 2);
 		
