@@ -1,7 +1,10 @@
 package net.bbmsoft.wavegen.generators;
 
+import java.util.Arrays;
+
 import javax.sound.sampled.AudioFormat;
 
+import net.bbmsoft.wavegen.ConversionHelper;
 import net.bbmsoft.wavegen.WaveGenerator;
 
 public abstract class WaveGeneratorBase implements WaveGenerator {
@@ -43,7 +46,9 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 			double relativePosition = (pos / samplesPer2Pi);
 			
 			double amp = toRelativeAmplitude(relativePosition) * this.gain;
-			byte[] formatted = convertToFormat(amp);
+			double[] amps = new double[format.getChannels()];
+			Arrays.fill(amps, amp);
+			byte[] formatted = ConversionHelper.toBytes(amps, format);
 			for (int j = 0; j < formatted.length && i < buffer.length; j++) {
 				buffer[i++] = formatted[j];
 			}
@@ -69,32 +74,6 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 	@Override
 	public AudioFormat getFormat() {
 		return this.format;
-	}
-
-	protected byte[] convertToFormat(double amp) {
-
-		int bytesPerSample = this.format.getSampleSizeInBits() / 8;
-		int length = bytesPerSample * this.format.getChannels();
-
-		byte[] bytes = new byte[length];
-
-		boolean bigEndian = this.format.isBigEndian();
-
-		double max = Math.pow(2, this.format.getSampleSizeInBits()) / 2 - 1;
-
-		long ampAbs = (long) (max * amp);
-
-		for (int channel = 0; channel < this.format.getChannels(); channel++) {
-			for (int b = 0; b < bytesPerSample; b++) {
-				long l = ampAbs << (b * 8);
-				long r = l >> ((bytesPerSample - 1) * 8);
-
-				int index = channel * bytesPerSample + (bigEndian ? b : bytesPerSample - b - 1);
-				bytes[index] = (byte) r;
-			}
-		}
-
-		return bytes;
 	}
 
 	protected double getSamplesPerPeriod() {

@@ -1,7 +1,6 @@
 package net.bbmsoft.wavegen.ui;
 
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.util.converter.DoubleStringConverter;
 
 public class SemitoneValueFactory extends SpinnerValueFactory<Double> {
 

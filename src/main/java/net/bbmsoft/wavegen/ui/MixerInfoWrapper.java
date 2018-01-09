@@ -1,9 +1,6 @@
 package net.bbmsoft.wavegen.ui;
 
-import java.util.Arrays;
-
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;

@@ -1,5 +1,7 @@
 package net.bbmsoft.wavegen;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,10 +16,16 @@ import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.SourceDataLine;
 
 public class ToneGenerator implements AutoCloseable {
+	
+	public interface Plugin {
+		
+		public void processBuffer(byte[] buffer);
+	}
 
 	private final ExecutorService thread = Executors.newSingleThreadExecutor(r -> new Thread(r, "Tone Generator"));
 	private final AtomicReference<SourceDataLine> playingLine;
 	private final int bufferSize;
+	private final List<Plugin> plugins;
 
 	private volatile WaveGenerator waveGenerator;
 	private volatile Mixer.Info mixerInfo;
@@ -30,6 +38,15 @@ public class ToneGenerator implements AutoCloseable {
 	public ToneGenerator(int bufferSize) {
 		this.bufferSize = bufferSize;
 		this.playingLine = new AtomicReference<SourceDataLine>();
+		this.plugins = new CopyOnWriteArrayList<>();
+	}
+	
+	public void addPlugin(Plugin plugin) {
+		this.plugins.add(plugin);
+	}
+	
+	public void removePlugin(Plugin plugin) {
+		this.plugins.remove(plugin);
 	}
 
 	public boolean stop() {
@@ -94,7 +111,7 @@ public class ToneGenerator implements AutoCloseable {
 			}
 		}
 		
-		line.write(buffer, 0, buffer.length);
+		process(line, buffer);
 
 		if (onPlaybackStart != null) {
 			onPlaybackStart.accept(System.currentTimeMillis());
@@ -102,7 +119,7 @@ public class ToneGenerator implements AutoCloseable {
 
 		while (this.playingLine.get() == line) {
 			this.waveGenerator.getNextBytes(buffer);
-			line.write(buffer, 0, buffer.length);
+			process(line, buffer);
 		}
 		
 		if(this.fadeIn) {
@@ -113,6 +130,11 @@ public class ToneGenerator implements AutoCloseable {
 			line.write(buffer, 0, buffer.length);
 		}
 		
+	}
+
+	private void process(SourceDataLine line, byte[] buffer) {
+		this.plugins.forEach(p -> p.processBuffer(buffer));
+		line.write(buffer, 0, buffer.length);
 	}
 	
 	private void doStop(SourceDataLine line) {

@@ -9,10 +9,12 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer.Info;
 
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.Region;
 import net.bbmsoft.wavegen.ToneGenerator;
 import net.bbmsoft.wavegen.WaveForm;
 import net.bbmsoft.wavegen.WaveGenerator;
@@ -49,6 +51,9 @@ public class ToneGeneratorUIController {
 
 	@FXML
 	private Slider gainSlider;
+	
+	@FXML
+	private Canvas canvas;
 
 	public ToneGeneratorUIController() {
 
@@ -66,13 +71,22 @@ public class ToneGeneratorUIController {
 		assert waveFormChoiceBox != null : "fx:id=\"waveFormChoiceBox\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 		assert mixerChoiceBox != null : "fx:id=\"mixerChoiceBox\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 		assert gainSlider != null : "fx:id=\"gainSlider\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
+		assert canvas != null : "fx:id=\"canvas\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 
 		initMixerChoiceBox();
 		initWaveFormChoiceBox();
 		initFrequencySpinner();
 		initStartButton();
 		initGainSlider();
+		initCanvas();
 
+	}
+
+	private void initCanvas() {
+		
+		Region canvasParent = (Region) this.canvas.getParent();
+		canvasParent.widthProperty().addListener((o, ov, nv) -> this.canvas.setWidth(nv.doubleValue()));
+		canvasParent.heightProperty().addListener((o, ov, nv) -> this.canvas.setHeight(nv.doubleValue()));
 	}
 
 	private void initGainSlider() {
