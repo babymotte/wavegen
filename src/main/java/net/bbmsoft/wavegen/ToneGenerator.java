@@ -19,7 +19,7 @@ public class ToneGenerator implements AutoCloseable {
 
 	public interface Plugin {
 
-		public void processBuffer(byte[] buffer, AudioFormat format);
+		public void processBuffer(byte[] buffer, double frequency, AudioFormat format);
 	}
 
 	private final ExecutorService thread = Executors.newSingleThreadExecutor(r -> new Thread(r, "Tone Generator"));
@@ -110,7 +110,7 @@ public class ToneGenerator implements AutoCloseable {
 			}
 		}
 
-		process(line, buffer, this.waveGenerator.getFormat());
+		process(line, buffer, this.waveGenerator.getFrequency(), this.waveGenerator.getFormat());
 
 		if (onPlaybackStart != null) {
 			onPlaybackStart.accept(System.currentTimeMillis());
@@ -118,7 +118,7 @@ public class ToneGenerator implements AutoCloseable {
 
 		while (this.playingLine.get() == line) {
 			this.waveGenerator.getNextBytes(buffer);
-			process(line, buffer, this.waveGenerator.getFormat());
+			process(line, buffer, this.waveGenerator.getFrequency(), this.waveGenerator.getFormat());
 		}
 
 		if (this.fadeIn) {
@@ -131,8 +131,8 @@ public class ToneGenerator implements AutoCloseable {
 
 	}
 
-	private void process(SourceDataLine line, byte[] buffer, AudioFormat format) {
-		this.plugins.forEach(p -> p.processBuffer(buffer, format));
+	private void process(SourceDataLine line, byte[] buffer, double frequency, AudioFormat format) {
+		this.plugins.forEach(p -> p.processBuffer(buffer, frequency, format));
 		line.write(buffer, 0, buffer.length);
 	}
 

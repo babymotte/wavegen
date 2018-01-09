@@ -11,22 +11,13 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 
 	private final AudioFormat format;
 
-	private double freqency;
-
-	private volatile double gain;
-	
+	private double freqency;	
 	private double pos;
 
 
 	public WaveGeneratorBase(AudioFormat format) {
 		this.format = format;
-		this.gain = 1;
 		this.setFrequency(440);
-	}
-	
-	@Override
-	public void setGain(double gain) {
-		this.gain = gain;
 	}
 
 	@Override
@@ -46,7 +37,7 @@ public abstract class WaveGeneratorBase implements WaveGenerator {
 
 			double relativePosition = (pos / framesPer2Pi);
 			
-			double amp = toRelativeAmplitude(relativePosition) * this.gain;
+			double amp = toRelativeAmplitude(relativePosition);
 			double[] amps = new double[format.getChannels()];
 			Arrays.fill(amps, amp);
 			byte[] formatted = ConversionHelper.toBytes(amps, format);

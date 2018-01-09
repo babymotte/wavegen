@@ -12,5 +12,4 @@ public interface WaveGenerator {
 
 	public AudioFormat getFormat();
 	
-	public void setGain(double gain);
 }

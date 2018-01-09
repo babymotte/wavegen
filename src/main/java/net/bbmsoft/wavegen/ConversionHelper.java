@@ -1,5 +1,7 @@
 package net.bbmsoft.wavegen;
 
+import java.util.function.Consumer;
+
 import javax.sound.sampled.AudioFormat;
 
 public class ConversionHelper {
@@ -70,5 +72,31 @@ public class ConversionHelper {
 		}
 
 		return bytes;
+	}
+
+	public static void convertPerFrame(byte[] buffer, AudioFormat format, Consumer<byte[]> frameConverter) {
+
+		for (int f = 0; f < buffer.length / format.getFrameSize(); f++) {
+			byte[] frame = new byte[format.getFrameSize()];
+			for(int i = 0; i < format.getFrameSize(); i++) {
+				frame[i] = buffer[f * format.getFrameSize() + i];
+			}
+			frameConverter.accept(frame);
+			for(int i = 0; i < format.getFrameSize(); i++) {
+				buffer[f * format.getFrameSize() + i] = frame[i];
+			}
+		}
+	}
+	
+	public static void convertAmplitudePerFrame(byte[] buffer, AudioFormat format, Consumer<double[]> frameAmplitudeConverter) {
+
+		convertPerFrame(buffer, format, b -> {
+			double[] amps = toAmplitude(b, format);
+			frameAmplitudeConverter.accept(amps);
+			byte[] converted = toBytes(amps, format);
+			for (int i = 0; i < b.length; i++) {
+				b[i] = converted[i];
+			}
+		});
 	}
 }

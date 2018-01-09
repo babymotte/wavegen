@@ -7,6 +7,8 @@ import javax.sound.sampled.AudioFormat;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import net.bbmsoft.wavegen.ConversionHelper;
 import net.bbmsoft.wavegen.ToneGenerator;
 
@@ -23,7 +25,7 @@ public class GraphRendererPlugin implements ToneGenerator.Plugin {
 	}
 
 	@Override
-	public void processBuffer(byte[] buffer, AudioFormat format) {
+	public void processBuffer(byte[] buffer, double frequency, AudioFormat format) {
 		byte[] bufferCopy = Arrays.copyOf(buffer, buffer.length);
 		Platform.runLater(() -> drawGraph(bufferCopy, format));
 	}
@@ -32,7 +34,14 @@ public class GraphRendererPlugin implements ToneGenerator.Plugin {
 		
 		last = new Point2D[format.getChannels()];
 		
-		this.canvas.getGraphicsContext2D().clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+		GraphicsContext g = this.canvas.getGraphicsContext2D();
+		
+		g.setFill(Color.BLACK);
+		g.setStroke(Color.rgb(0, 255, 135));
+		g.setLineWidth(2);
+		
+		g.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+		g.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 
 		int frameSize = format.getFrameSize();
 		int frames = buffer.length/frameSize;

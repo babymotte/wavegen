@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.canvas.Canvas?>
+<?import net.bbmsoft.wavegen.ui.ResizableCanvas?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -37,7 +37,7 @@
          <content>
             <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
-                  <Canvas fx:id="canvas" height="200.0" width="200.0" />
+                  <ResizableCanvas fx:id="canvas" height="200.0" width="200.0" />
                </children>
             </StackPane>
          </content>

@@ -14,7 +14,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.Region;
 import net.bbmsoft.wavegen.ToneGenerator;
 import net.bbmsoft.wavegen.WaveForm;
 import net.bbmsoft.wavegen.WaveGenerator;
@@ -23,11 +22,13 @@ import net.bbmsoft.wavegen.generators.SineWaveGenerator;
 import net.bbmsoft.wavegen.generators.SquareWaveGenerator;
 import net.bbmsoft.wavegen.generators.TriangleWaveGenerator;
 import net.bbmsoft.wavegen.generators.WhiteNoiseGenerator;
+import net.bbmsoft.wavegen.plugins.GainPlugin;
 import net.bbmsoft.wavegen.plugins.GraphRendererPlugin;
 
 public class ToneGeneratorUIController {
 
 	private final ToneGenerator toneGenerator;
+	private final GainPlugin gainPlugin;
 	private final AudioFormat format;
 
 	private WaveGenerator selectedWaveGenerator;
@@ -55,12 +56,15 @@ public class ToneGeneratorUIController {
 	
 	@FXML
 	private Canvas canvas;
-
+	
 	public ToneGeneratorUIController() {
 
-		this.toneGenerator = new ToneGenerator(4096);
+		this.toneGenerator = new ToneGenerator(16384);
 		this.format = new AudioFormat(48_000, 16, 2, true, true);
 		this.toneGenerator.setFadeIn(true);
+		this.gainPlugin = new GainPlugin();
+		
+		this.toneGenerator.addPlugin(this.gainPlugin);
 
 	}
 
@@ -84,20 +88,16 @@ public class ToneGeneratorUIController {
 	}
 
 	private void initCanvas() {
-		
-		Region canvasParent = (Region) this.canvas.getParent();
-		canvasParent.widthProperty().addListener((o, ov, nv) -> this.canvas.setWidth(nv.doubleValue()));
-		canvasParent.heightProperty().addListener((o, ov, nv) -> this.canvas.setHeight(nv.doubleValue()));
-		
 		this.toneGenerator.addPlugin(new GraphRendererPlugin(this.canvas));
 	}
 
 	private void initGainSlider() {
 		this.gainSlider.valueProperty().addListener((o, ov, nv) -> updateGain(nv.doubleValue()));
+		updateGain(this.gainSlider.getValue());
 	}
 
 	private void updateGain(double gain) {
-		this.selectedWaveGenerator.setGain(gain);
+		this.gainPlugin.setGain(gain);
 	}
 
 	private void initStartButton() {
@@ -162,20 +162,8 @@ public class ToneGeneratorUIController {
 		}
 
 		this.selectedWaveGenerator.setFrequency(getFrequency());
-		this.selectedWaveGenerator.setGain(getGain());
 		this.toneGenerator.setWaveGenerator(this.selectedWaveGenerator);
 
-	}
-
-	private double getGain() {
-		
-		double gain = 1.0;
-
-		if (this.gainSlider != null) {
-			gain = this.gainSlider.getValue();
-		}
-		
-		return gain;
 	}
 
 	private double getFrequency() {

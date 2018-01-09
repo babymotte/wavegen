@@ -16,5 +16,10 @@ public class WhiteNoiseGenerator extends WaveGeneratorBase {
 	protected double toRelativeAmplitude(double relativePosition) {
 		return rand.nextDouble() * 2 - 1;
 	}
+	
+	@Override
+	public double getFrequency() {
+		return -1;
+	}
 
 }
