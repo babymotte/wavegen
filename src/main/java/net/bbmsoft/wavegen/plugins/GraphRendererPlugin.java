@@ -38,7 +38,7 @@ public class GraphRendererPlugin implements ToneGenerator.Plugin {
 
 		g.setFill(Color.BLACK);
 		g.setStroke(Color.rgb(0, 255, 135));
-		g.setLineWidth(2);
+		g.setLineWidth(1);
 
 		g.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 		g.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
