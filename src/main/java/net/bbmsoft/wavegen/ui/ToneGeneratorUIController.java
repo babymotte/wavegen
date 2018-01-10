@@ -205,6 +205,10 @@ public class ToneGeneratorUIController {
 		this.mixerChoiceBox.getSelectionModel().select(0);
 	}
 
+	public ToneGenerator getToneGenerator() {
+		return toneGenerator;
+	}
+
 	public void close() {
 		this.toneGenerator.close();
 	}
