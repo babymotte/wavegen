@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<GridPane hgap="12.0" vgap="12.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <rowConstraints>
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="SOMETIMES" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="ALWAYS" />
+      <RowConstraints vgrow="NEVER" />
+   </rowConstraints>
+   <columnConstraints>
+      <ColumnConstraints hgrow="NEVER" />
+      <ColumnConstraints hgrow="ALWAYS" />
+      <ColumnConstraints hgrow="NEVER" />
+      <ColumnConstraints hgrow="NEVER" />
+   </columnConstraints>
+   <children>
+      <Spinner fx:id="freqSpinner" editable="true" />
+      <Label text="Hz" GridPane.columnIndex="1" />
+      <ToggleButton fx:id="startStopButton" mnemonicParsing="false" prefWidth="64.0" text="Start" GridPane.columnIndex="2" />
+      <ChoiceBox fx:id="waveFormChoiceBox" maxWidth="1.7976931348623157E308" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+      <ChoiceBox fx:id="mixerChoiceBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+      <StackPane fx:id="volumeSliderContainer" GridPane.columnIndex="3" GridPane.rowSpan="2147483647">
+      </StackPane>
+      <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="500.0" text="Oscilloscope" GridPane.columnSpan="3" GridPane.rowIndex="3">
+         <content>
+            <StackPane fx:id="visualizationContainer" prefHeight="150.0" prefWidth="200.0">
+            </StackPane>
+         </content>
+      </TitledPane>
+      <CheckBox fx:id="fadeInOutCheckBox" mnemonicParsing="false" selected="true" text="Fade in/out" GridPane.rowIndex="4" />
+   </children>
+   <padding>
+      <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+   </padding>
+</GridPane>

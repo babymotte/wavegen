@@ -1,0 +1,43 @@
+-standalone: target/index.xml
+
+-runfw: org.apache.felix.framework;version='[5.6.10,5.6.10]'
+-runee: JavaSE-1.8
+
+-runrequires: \
+	bnd.identity;id='org.apache.felix.scr',\
+	bnd.identity;id='org.apache.felix.gogo.shell',\
+	bnd.identity;id='org.apache.felix.gogo.command',\
+	bnd.identity;id='wavegen-core',\
+	bnd.identity;id='wavegen-ui'
+	
+	
+-runsystempackages: \
+	javafx.application,\
+	javafx.collections,\
+	javafx.beans.property,\
+	javafx.beans.value,\
+	javafx.css,\
+	javafx.event,\
+	javafx.fxml,\
+	javafx.geometry,\
+	javafx.stage,\
+	javafx.scene,\
+	javafx.scene.canvas,\
+	javafx.scene.control,\
+	javafx.scene.image,\
+	javafx.scene.input,\
+	javafx.scene.layout,\
+	javafx.scene.paint,\
+	javafx.scene.text,\
+	javafx.util
+	
+-runbundles: \
+	org.apache.felix.scr;version='[2.0.14,2.0.15)',\
+	iocfx;version='[2.0.0,2.0.1)',\
+	wavegen-api;version='[2.0.0,2.0.1)',\
+	wavegen-core;version='[2.0.0,2.0.1)',\
+	wavegen-ui;version='[2.0.0,2.0.1)',\
+	bbm-fx-controls;version='[1.0.0,1.0.1)',\
+	org.apache.felix.gogo.command;version='[1.0.2,1.0.3)',\
+	org.apache.felix.gogo.runtime;version='[1.0.0,1.0.1)',\
+	org.apache.felix.gogo.shell;version='[1.0.0,1.0.1)'

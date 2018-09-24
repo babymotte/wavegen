@@ -1,0 +1,9 @@
+org.apache.felix.gogo.runtime;version='[1.0.0,1.0.1)';resolution=file:/home/mbachmann/.m2/repository/org/apache/felix/org.apache.felix.gogo.runtime/1.0.0/org.apache.felix.gogo.runtime-1.0.0.jar
+org.apache.felix.gogo.shell;version='[1.0.0,1.0.1)';resolution=file:/home/mbachmann/.m2/repository/org/apache/felix/org.apache.felix.gogo.shell/1.0.0/org.apache.felix.gogo.shell-1.0.0.jar
+wavegen-api;version='[2.0.0,2.0.1)';resolution=file:/home/mbachmann/Code/wavegen/wavegen-api/target/wavegen-api-2.0.0-SNAPSHOT.jar
+iocfx;version='[2.0.0,2.0.1)';resolution=file:/home/mbachmann/.m2/repository/net/bbmsoft/iocfx/2.0.0/iocfx-2.0.0.jar
+org.apache.felix.gogo.command;version='[1.0.2,1.0.3)';resolution=file:/home/mbachmann/.m2/repository/org/apache/felix/org.apache.felix.gogo.command/1.0.2/org.apache.felix.gogo.command-1.0.2.jar
+bbm-fx-controls;version='[1.0.0,1.0.1)';resolution=file:/home/mbachmann/Code/bbmsoft/bbm-fx-controls/target/bbm-fx-controls-1.0.0-SNAPSHOT.jar
+org.apache.felix.scr;version='[2.0.14,2.0.15)';resolution=file:/home/mbachmann/.m2/repository/org/apache/felix/org.apache.felix.scr/2.0.14/org.apache.felix.scr-2.0.14.jar
+wavegen-core;version='[2.0.0,2.0.1)';resolution=file:/home/mbachmann/Code/wavegen/wavegen-core/target/wavegen-core-2.0.0-SNAPSHOT.jar
+wavegen-ui;version='[2.0.0,2.0.1)';resolution=file:/home/mbachmann/Code/wavegen/wavegen-ui/target/wavegen-ui-2.0.0-SNAPSHOT.jar
