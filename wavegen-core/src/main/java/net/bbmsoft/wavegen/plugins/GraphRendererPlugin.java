@@ -2,6 +2,7 @@ package net.bbmsoft.wavegen.plugins;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -9,24 +10,25 @@ import org.osgi.service.component.annotations.Component;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import net.bbmsoft.fx.controls.ResizableCanvas;
 import net.bbmsoft.iocfx.Fxml;
 import net.bbmsoft.wavegen.Plugin;
 import net.bbmsoft.wavegen.impl.ConversionHelper;
 
-//@Component
-public class GraphRendererPlugin implements Plugin, Fxml.Controller, Fxml.Consumer<Region> {
+@Component
+public class GraphRendererPlugin implements Plugin, Fxml.Controller, Initializable {
 
 	private double vgap = 8;
 
 	private Point2D[] last;
-
-	private Region ui;
+	
+	private StackPane root;
 	
 	@FXML
 	private ResizableCanvas canvas;
@@ -35,6 +37,16 @@ public class GraphRendererPlugin implements Plugin, Fxml.Controller, Fxml.Consum
 	public void processBuffer(byte[] buffer, double frequency, AudioFormat format) {
 		byte[] bufferCopy = Arrays.copyOf(buffer, buffer.length);
 		Platform.runLater(() -> drawGraph(bufferCopy, frequency, format));
+	}
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		
+		if(this.root == null) {
+			this.root = new StackPane();
+		}
+		
+		this.root.getChildren().add(this.canvas);
 	}
 
 	private void drawGraph(byte[] buffer, double frequency, AudioFormat format) {
@@ -101,11 +113,12 @@ public class GraphRendererPlugin implements Plugin, Fxml.Controller, Fxml.Consum
 
 	@Override
 	public Node getUi() {
-		return this.ui;
+		
+		if(this.root == null) {
+			this.root = new StackPane();
+		}
+		
+		return this.root;
 	}
 
-	@Override
-	public void accept(Region ui) {
-		this.ui = ui;
-	}
 }

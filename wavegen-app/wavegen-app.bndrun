@@ -33,7 +33,7 @@
 	
 -runbundles: \
 	org.apache.felix.scr;version='[2.0.14,2.0.15)',\
-	iocfx;version='[2.0.0,2.0.1)',\
+	iocfx;version='[3.0.0,3.0.1)',\
 	wavegen-api;version='[2.0.0,2.0.1)',\
 	wavegen-core;version='[2.0.0,2.0.1)',\
 	wavegen-ui;version='[2.0.0,2.0.1)',\

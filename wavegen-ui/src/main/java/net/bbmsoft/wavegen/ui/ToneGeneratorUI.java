@@ -1,7 +1,9 @@
 package net.bbmsoft.wavegen.ui;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
@@ -40,14 +42,8 @@ public class ToneGeneratorUI implements Fxml.Controller, Fxml.Consumer<Parent> {
 	@Reference
 	private WaveGenerator selectedWaveGenerator;
 
-//	@Reference
-//	private Plugin graphRendererPlugin;
-
 	@Reference
 	private ToneGenerator toneGenerator;
-	
-	@Reference
-	private Plugin gainPlugin;
 	
 	@Reference
 	private WaveGenerator waveGenerator;
@@ -91,8 +87,53 @@ public class ToneGeneratorUI implements Fxml.Controller, Fxml.Consumer<Parent> {
 	@FXML
 	private Pane volumeSliderContainer;
 	
-	private final ObservableList<WaveFormWrapper> waveForms = FXCollections.observableArrayList();
+	private final ObservableList<WaveFormWrapper> waveForms;
+	private final Set<Plugin> plugins;
+
+	private boolean initialized;
 	
+	public ToneGeneratorUI() {
+		this.waveForms = FXCollections.observableArrayList();
+		this.plugins = new HashSet<>();
+	}
+	
+	@Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE)
+	public synchronized void addPlugin(Plugin plugin) {
+		
+		if(this.plugins.add(plugin) && this.initialized) {
+			this.platform.runOnFxApplicationThread(() -> doAddPlugin(plugin));
+		}
+	}
+
+	public synchronized void removePlugin(Plugin plugin) {
+		
+		if(this.plugins.remove(plugin) && this.initialized) {
+			this.platform.runOnFxApplicationThread(() -> doRemovePlugin(plugin));
+		}
+	}
+
+	private void doAddPlugin(Plugin plugin) {
+		
+		if(Plugin.MASTER_VOLUME_ROLE.equals(plugin.getRole())) {
+			this.volumeSliderContainer.getChildren().add(plugin.getUi());
+		}
+		
+		if(Plugin.VISUALIZATION_ROLE.equals(plugin.getRole())) {
+			this.visualizationContainer.getChildren().add(plugin.getUi());
+		}
+	}
+	
+	private void doRemovePlugin(Plugin plugin) {
+
+		if(Plugin.MASTER_VOLUME_ROLE.equals(plugin.getRole())) {
+			this.volumeSliderContainer.getChildren().remove(plugin.getUi());
+		}
+		
+		if(Plugin.VISUALIZATION_ROLE.equals(plugin.getRole())) {
+			this.visualizationContainer.getChildren().remove(plugin.getUi());
+		}
+	}
+
 	@Override
 	public URL getLocation() {
 		return this.getClass().getResource(this.getClass().getSimpleName() + ".fxml");
@@ -108,7 +149,9 @@ public class ToneGeneratorUI implements Fxml.Controller, Fxml.Consumer<Parent> {
 	}
 
 	@FXML
-	void initialize() {
+	synchronized void initialize() {
+		
+		this.initialized = true;
 
 		assert freqSpinner != null : "fx:id=\"freqSpinner\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
 		assert startStopButton != null : "fx:id=\"startStopButton\" was not injected: check your FXML file 'ToneGeneratorUI.fxml'.";
@@ -125,7 +168,9 @@ public class ToneGeneratorUI implements Fxml.Controller, Fxml.Consumer<Parent> {
 		initCanvas();
 		initFadeInOutCheckBox();
 		
-		this.volumeSliderContainer.getChildren().add(this.gainPlugin.getUi());
+		for(Plugin plugin : this.plugins) {
+			doAddPlugin(plugin);
+		}
 		
 	}
 
